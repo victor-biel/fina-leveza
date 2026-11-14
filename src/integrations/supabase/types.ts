@@ -14,7 +14,301 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      chat_messages: {
+        Row: {
+          created_at: string
+          id: string
+          parts: Json
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          parts?: Json
+          role: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          parts?: Json
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      expense_splits: {
+        Row: {
+          created_at: string
+          group_id: string | null
+          id: string
+          is_self: boolean
+          liquidado: boolean
+          membro: string
+          percentual: number
+          transaction_id: string
+          user_id: string
+          valor: number
+        }
+        Insert: {
+          created_at?: string
+          group_id?: string | null
+          id?: string
+          is_self?: boolean
+          liquidado?: boolean
+          membro: string
+          percentual: number
+          transaction_id: string
+          user_id?: string
+          valor: number
+        }
+        Update: {
+          created_at?: string
+          group_id?: string | null
+          id?: string
+          is_self?: boolean
+          liquidado?: boolean
+          membro?: string
+          percentual?: number
+          transaction_id?: string
+          user_id?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expense_splits_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "split_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expense_splits_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      goals: {
+        Row: {
+          created_at: string
+          id: string
+          nome: string
+          prazo: string
+          user_id: string
+          valor_atual: number
+          valor_objetivo: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nome: string
+          prazo: string
+          user_id?: string
+          valor_atual?: number
+          valor_objetivo: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nome?: string
+          prazo?: string
+          user_id?: string
+          valor_atual?: number
+          valor_objetivo?: number
+        }
+        Relationships: []
+      }
+      group_members: {
+        Row: {
+          created_at: string
+          group_id: string
+          id: string
+          is_self: boolean
+          nome: string
+          percentual_padrao: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          group_id: string
+          id?: string
+          is_self?: boolean
+          nome: string
+          percentual_padrao?: number | null
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          group_id?: string
+          id?: string
+          is_self?: boolean
+          nome?: string
+          percentual_padrao?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "split_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          moeda: string
+          nome: string | null
+          notificacoes: boolean
+          objetivos: string | null
+          onboarded: boolean
+          partilha: string | null
+          receita_mensal: number | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id: string
+          moeda?: string
+          nome?: string | null
+          notificacoes?: boolean
+          objetivos?: string | null
+          onboarded?: boolean
+          partilha?: string | null
+          receita_mensal?: number | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          moeda?: string
+          nome?: string | null
+          notificacoes?: boolean
+          objetivos?: string | null
+          onboarded?: boolean
+          partilha?: string | null
+          receita_mensal?: number | null
+        }
+        Relationships: []
+      }
+      split_groups: {
+        Row: {
+          created_at: string
+          id: string
+          nome: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nome: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nome?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          categoria: string
+          created_at: string
+          data: string
+          descricao: string | null
+          id: string
+          origem: string
+          pago_por: string | null
+          tipo: string
+          user_id: string
+          valor: number
+        }
+        Insert: {
+          categoria: string
+          created_at?: string
+          data?: string
+          descricao?: string | null
+          id?: string
+          origem?: string
+          pago_por?: string | null
+          tipo: string
+          user_id?: string
+          valor: number
+        }
+        Update: {
+          categoria?: string
+          created_at?: string
+          data?: string
+          descricao?: string | null
+          id?: string
+          origem?: string
+          pago_por?: string | null
+          tipo?: string
+          user_id?: string
+          valor?: number
+        }
+        Relationships: []
+      }
+      uploaded_documents: {
+        Row: {
+          categoria_sugerida: string | null
+          created_at: string
+          data_extraida: string | null
+          empresa: string | null
+          estado: string
+          id: string
+          nome_arquivo: string
+          tipo_despesa: string | null
+          transaction_id: string | null
+          user_id: string
+          valor_extraido: number | null
+        }
+        Insert: {
+          categoria_sugerida?: string | null
+          created_at?: string
+          data_extraida?: string | null
+          empresa?: string | null
+          estado?: string
+          id?: string
+          nome_arquivo: string
+          tipo_despesa?: string | null
+          transaction_id?: string | null
+          user_id?: string
+          valor_extraido?: number | null
+        }
+        Update: {
+          categoria_sugerida?: string | null
+          created_at?: string
+          data_extraida?: string | null
+          empresa?: string | null
+          estado?: string
+          id?: string
+          nome_arquivo?: string
+          tipo_despesa?: string | null
+          transaction_id?: string | null
+          user_id?: string
+          valor_extraido?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "uploaded_documents_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
