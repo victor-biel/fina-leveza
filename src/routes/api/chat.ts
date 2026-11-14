@@ -107,7 +107,7 @@ export const Route = createFileRoute("/api/chat")({
                 }
                 if (!calls.length) break;
                 for (const c of calls) {
-                  let args: Record<string, unknown> = {};
+                  let args: Record<string, Json> = {};
                   try {
                     args = JSON.parse(c.arguments || "{}");
                   } catch {
@@ -122,7 +122,7 @@ export const Route = createFileRoute("/api/chat")({
                     errorText = err instanceof Error ? err.message : "Erro ao executar";
                   }
                   send(errorText ? { type: "tool-result", toolCallId: c.call_id, errorText } : { type: "tool-result", toolCallId: c.call_id, output: output as Json });
-                  parts.push(errorText ? { type: "tool", toolCallId: c.call_id, name: c.name, input: args as Record<string, Json>, state: "output-error", errorText } : { type: "tool", toolCallId: c.call_id, name: c.name, input: args as Record<string, Json>, state: "output-available", output: (output ?? null) as Json });
+                  parts.push(errorText ? { type: "tool", toolCallId: c.call_id, name: c.name, input: args, state: "output-error", errorText } : { type: "tool", toolCallId: c.call_id, name: c.name, input: args, state: "output-available", output: (output ?? null) as Json });
                   input.push({ type: "function_call", call_id: c.call_id, name: c.name, arguments: c.arguments || "{}" });
                   input.push({ type: "function_call_output", call_id: c.call_id, output: JSON.stringify(errorText ? { erro: errorText } : output ?? null) });
                 }
