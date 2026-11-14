@@ -74,7 +74,7 @@ export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
   return <div className={cn("rounded-3xl bg-card p-5 shadow-soft", className)} {...props} />;
 }
 
-export function Money({ value, moeda, className, sign }: { value: number; moeda?: string; className?: string; sign?: "+" | "-" }) {
+export function Money({ value, moeda, className, sign }: { value: number; moeda?: string | undefined; className?: string | undefined; sign?: "+" | "-" | undefined }) {
   return (
     <span className={cn("tabular", className)}>
       {sign}
@@ -94,7 +94,7 @@ export function EmptyState({ title, text, cta }: { title: string; text: string; 
   );
 }
 
-export function TxRow({ tx, moeda, share }: { tx: { id: string; tipo: string; valor: number; categoria: string; descricao: string | null; data: string }; moeda?: string; share?: number }) {
+export function TxRow({ tx, moeda, share }: { tx: { id: string; tipo: string; valor: number; categoria: string; descricao: string | null; data: string }; moeda?: string | undefined; share?: number | undefined }) {
   const d = new Date(tx.data + "T12:00:00");
   return (
     <li className="flex items-center gap-3 py-3">

@@ -9,13 +9,13 @@ export function currentMonthKey(d = new Date()) {
 }
 
 export function prevMonthKey(key: string) {
-  const [y, m] = key.split("-").map(Number);
+  const [y = 1970, m = 1] = key.split("-").map(Number);
   const d = new Date(y, m - 2, 1);
   return currentMonthKey(d);
 }
 
 export function monthLabel(key: string, style: "short" | "long" = "short") {
-  const [y, m] = key.split("-").map(Number);
+  const [y = 1970, m = 1] = key.split("-").map(Number);
   return new Intl.DateTimeFormat("pt-PT", { month: style }).format(new Date(y, m - 1, 1)).replace(".", "");
 }
 

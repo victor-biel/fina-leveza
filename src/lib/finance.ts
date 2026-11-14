@@ -81,15 +81,15 @@ export function computeSplit(total: number, participants: SplitParticipant[]): S
   let remainder = totalCents - cents.reduce((a, b) => a + b, 0);
   // Give leftover cents to the largest fractional parts first.
   const order = raw.map((r, i) => ({ i, frac: r - Math.floor(r) })).sort((a, b) => b.frac - a.frac);
-  for (let k = 0; remainder > 0; k = (k + 1) % order.length, remainder--) cents[order[k].i] += 1;
+  for (let k = 0; remainder > 0; k = (k + 1) % order.length, remainder--) cents[order[k]!.i]! += 1;
 
   return {
     ok: true,
     shares: participants.map((p, i) => ({
       nome: p.nome.trim(),
       is_self: !!p.is_self,
-      percentual: round2(pcts[i]),
-      valor: cents[i] / 100,
+      percentual: round2(pcts[i]!),
+      valor: cents[i]! / 100,
     })),
   };
 }

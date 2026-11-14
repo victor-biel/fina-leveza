@@ -71,7 +71,7 @@ function Onboarding() {
     { q: "Partilha despesas com alguém? (casa, família, colegas)", ok: true, hint: "Eu crio um grupo para dividir contas automaticamente." },
     { q: "Quer que eu lhe envie lembretes e dicas de vez em quando?", ok: notificacoes !== null },
   ];
-  const current = steps[step];
+  const current = steps[step]!;
 
   function addPessoa() {
     const n = novaPessoa.trim();
@@ -88,7 +88,7 @@ function Onboarding() {
         .from("profiles")
         .upsert({
           id,
-          email: auth.user!.email,
+          email: auth.user!.email ?? null,
           nome: nome.trim(),
           receita_mensal: receita ? Number(receita) : null,
           objetivos: objetivos.join(", ") || null,

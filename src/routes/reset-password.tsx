@@ -41,7 +41,10 @@ function ResetPassword() {
     setLoading(true);
     const { error } = await supabase.auth.updateUser({ password });
     setLoading(false);
-    if (error) return toast.error("Não foi possível atualizar. O link pode ter expirado.");
+    if (error) {
+      toast.error("Não foi possível atualizar. O link pode ter expirado.");
+      return;
+    }
     toast.success("Palavra-passe atualizada!");
     navigate({ to: "/inicio", replace: true });
   }

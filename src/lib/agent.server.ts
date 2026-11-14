@@ -171,12 +171,15 @@ function isUuid(s: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
 }
 
-async function findByName<T extends "goals" | "split_groups">(db: DB, table: T, ref: string) {
-  if (isUuid(ref)) {
-    const { data } = await db.from(table).select("*").eq("id", ref).maybeSingle();
-    return data;
-  }
-  const { data } = await db.from(table).select("*").ilike("nome", `%${ref.trim()}%`).limit(1);
+async function findGoal(db: DB, ref: string) {
+  if (isUuid(ref)) return (await db.from("goals").select("*").eq("id", ref).maybeSingle()).data;
+  const { data } = await db.from("goals").select("*").ilike("nome", `%${ref.trim()}%`).limit(1);
+  return data?.[0] ?? null;
+}
+
+async function findGroup(db: DB, ref: string) {
+  if (isUuid(ref)) return (await db.from("split_groups").select("*").eq("id", ref).maybeSingle()).data;
+  const { data } = await db.from("split_groups").select("*").ilike("nome", `%${ref.trim()}%`).limit(1);
   return data?.[0] ?? null;
 }
 
@@ -216,7 +219,15 @@ async function periodSummary(db: DB, inicio: string, fim: string, categoria?: st
   };
 }
 
-export async function runTool(db: DB, userId: string, name: string, args: Record<string, any>): Promise<unknown> {
+/** Arguments the model may send to any tool. Every field is optional and validated inside runTool. */
+export type ToolArgs = {
+  tipo?: any; valor?: any; categoria?: any; descricao?: any; data?: any; id?: any;
+  inicio?: any; fim?: any; nome?: any; valor_objetivo?: any; prazo?: any; valor_atual?: any;
+  meta?: any; membros?: any; grupo?: any; adicionar?: any; remover?: any; percentuais?: any;
+  transacao_id?: any; participantes?: any; pago_por?: any; pessoa?: any;
+};
+
+export async function runTool(db: DB, userId: string, name: string, args: ToolArgs): Promise<unknown> {
   switch (name) {
     case "registar_transacao": {
       const valor = Number(args.valor);
@@ -255,7 +266,7 @@ export async function runTool(db: DB, userId: string, name: string, args: Record
       return { id: data.id, nome: data.nome, valor_objetivo: p.alvo, valor_atual: p.atual, prazo: data.prazo, percent: p.percent, poupancaMensal: p.poupancaMensal };
     }
     case "contribuir_meta": {
-      const goal = await findByName(db, "goals", String(args.meta));
+      const goal = await findGoal(db, String(args.meta));
       if (!goal) throw new Error("Não encontrei essa meta.");
       const novo = Math.max(0, round2(Number(goal.valor_atual) + Number(args.valor)));
       const { data, error } = await db.from("goals").update({ valor_atual: novo }).eq("id", goal.id).select("*").single();
@@ -288,7 +299,7 @@ export async function runTool(db: DB, userId: string, name: string, args: Record
       return { id: g.id, nome: g.nome, membros };
     }
     case "editar_grupo": {
-      const g = await findByName(db, "split_groups", String(args.grupo));
+      const g = await findGroup(db, String(args.grupo));
       if (!g) throw new Error("Não encontrei esse grupo.");
       for (const nome of (args.remover ?? []) as string[]) {
         await db.from("group_members").delete().eq("group_id", g.id).ilike("nome", nome.trim());
@@ -325,7 +336,7 @@ export async function runTool(db: DB, userId: string, name: string, args: Record
       let participantes = (args.participantes ?? []) as { nome: string; is_self?: boolean; percentual?: number | null }[];
       let groupId: string | null = null;
       if (args.grupo) {
-        const g = await findByName(db, "split_groups", String(args.grupo));
+        const g = await findGroup(db, String(args.grupo));
         if (!g) throw new Error(`Não encontrei o grupo "${args.grupo}".`);
         groupId = g.id;
         if (!participantes.length) {
@@ -372,7 +383,7 @@ export async function runTool(db: DB, userId: string, name: string, args: Record
   }
 }
 
-export function systemPrompt(opts: { nome?: string | null; receita?: number | null; objetivos?: string | null; partilha?: string | null; moeda: string; hoje: string }) {
+export function systemPrompt(opts: { nome?: string | null | undefined; receita?: number | null | undefined; objetivos?: string | null | undefined; partilha?: string | null | undefined; moeda: string; hoje: string }) {
   return `És a Fina, uma assistente financeira pessoal, calorosa e muito simples de entender. Falas português de Portugal (tratas o utilizador por "você" de forma informal e simpática). A moeda é ${opts.moeda}.
 
 Hoje é ${opts.hoje}. "Ontem" = dia anterior. Converte sempre datas relativas para AAAA-MM-DD.

@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import type { Json } from "@/integrations/supabase/types";
+import type { Json, Tables } from "@/integrations/supabase/types";
 import type { ChatMessage, ChatPart, DocumentDTO } from "./chat-types";
 import { CATEGORIAS } from "./finance";
 
@@ -13,7 +13,7 @@ const ExtractInput = z.object({
     .regex(/^data:(application\/pdf|image\/(png|jpeg|webp));base64,/),
 });
 
-function toDTO(d: Record<string, any>): DocumentDTO {
+function toDTO(d: Tables<"uploaded_documents">): DocumentDTO {
   return {
     id: d.id,
     nome_arquivo: d.nome_arquivo,
@@ -22,7 +22,7 @@ function toDTO(d: Record<string, any>): DocumentDTO {
     data_extraida: d.data_extraida,
     tipo_despesa: d.tipo_despesa,
     categoria_sugerida: d.categoria_sugerida,
-    estado: d.estado,
+    estado: d.estado as DocumentDTO["estado"],
     transaction_id: d.transaction_id,
   };
 }
@@ -75,7 +75,11 @@ export const extractDocument = createServerFn({ method: "POST" })
           },
         },
       });
-      extracted = JSON.parse(res.output_text ?? "{}");
+      const outText = res.output
+        .flatMap((o) => (o.type === "message" ? o.content : []))
+        .map((c) => (c.type === "output_text" ? c.text : ""))
+        .join("");
+      extracted = JSON.parse(outText || "{}");
     } catch (err) {
       console.error("extract failed", err);
       throw new Error("Não consegui ler este documento. Tente outro ficheiro.");

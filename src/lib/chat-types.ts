@@ -1,3 +1,5 @@
+import type { Json } from "@/integrations/supabase/types";
+
 export type DocumentDTO = {
   id: string;
   nome_arquivo: string;
@@ -16,9 +18,9 @@ export type ChatPart =
       type: "tool";
       toolCallId: string;
       name: string;
-      input: Record<string, unknown>;
+      input: Record<string, Json>;
       state: "input-available" | "output-available" | "output-error";
-      output?: unknown;
+      output?: Json;
       errorText?: string;
     }
   | { type: "document"; document: DocumentDTO }
@@ -34,7 +36,7 @@ export type ChatMessage = {
 export type StreamEvent =
   | { type: "user-saved"; id: string }
   | { type: "text-delta"; delta: string }
-  | { type: "tool-start"; toolCallId: string; name: string; input: Record<string, unknown> }
-  | { type: "tool-result"; toolCallId: string; output?: unknown; errorText?: string }
+  | { type: "tool-start"; toolCallId: string; name: string; input: Record<string, Json> }
+  | { type: "tool-result"; toolCallId: string; output?: Json; errorText?: string }
   | { type: "done"; id: string }
   | { type: "error"; message: string };
