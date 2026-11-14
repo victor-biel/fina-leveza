@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { z } from "zod";
-import { zodValidator } from "@tanstack/zod-adapter";
 import { ArrowLeft, ArrowUp, Loader2, Paperclip, Square } from "lucide-react";
 import { toast } from "sonner";
 import { Conversation, ConversationContent, ConversationScrollButton } from "@/components/ai-elements/conversation";
@@ -17,13 +15,17 @@ import { chatQuery, financeKeys, profileQuery } from "@/lib/queries";
 import type { ChatMessage, ChatPart, StreamEvent } from "@/lib/chat-types";
 import { cn } from "@/lib/utils";
 
-const search = z.object({
-  q: z.string().max(500).optional(),
-  anexar: z.boolean().optional(),
-});
+type ChatSearch = { q?: string; anexar?: boolean };
+
+function validateChatSearch(raw: Record<string, unknown>): ChatSearch {
+  const out: ChatSearch = {};
+  if (typeof raw["q"] === "string") out.q = raw["q"].slice(0, 500);
+  if (raw["anexar"] === true || raw["anexar"] === "true") out.anexar = true;
+  return out;
+}
 
 export const Route = createFileRoute("/_authenticated/_app/chat")({
-  validateSearch: zodValidator(search),
+  validateSearch: validateChatSearch,
   head: () => ({
     meta: [
       { title: "Conversa com a Fina" },
