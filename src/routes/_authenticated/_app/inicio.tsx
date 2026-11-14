@@ -83,7 +83,7 @@ function Home() {
       <Section className="mt-6">
         <Card className="flex items-start gap-3 bg-highlight/25 shadow-none">
           <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-highlight text-highlight-foreground"><Lightbulb className="size-5" /></span>
-          <p className="text-sm font-medium text-foreground">{insight.text}</p>
+          <p className="text-sm font-medium text-foreground">{insight?.text}</p>
         </Card>
       </Section>
 

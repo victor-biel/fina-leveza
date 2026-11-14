@@ -3,6 +3,7 @@ import { z } from "zod";
 import { streamResponse, GatewayError, type ResponsesInputItem } from "@lovable.dev/ai-gateway";
 import type { Json } from "@/integrations/supabase/types";
 import type { ChatPart, StreamEvent } from "@/lib/chat-types";
+import type { ToolArgs } from "@/lib/agent.server";
 
 const Body = z.object({ text: z.string().trim().min(1).max(4000) });
 
@@ -116,12 +117,12 @@ export const Route = createFileRoute("/api/chat")({
                   let output: unknown;
                   let errorText: string | undefined;
                   try {
-                    output = await runTool(db, userId, c.name, args);
+                    output = await runTool(db, userId, c.name, args as ToolArgs);
                   } catch (err) {
                     errorText = err instanceof Error ? err.message : "Erro ao executar";
                   }
-                  send({ type: "tool-result", toolCallId: c.call_id, output, errorText });
-                  parts.push({ type: "tool", toolCallId: c.call_id, name: c.name, input: args, state: errorText ? "output-error" : "output-available", output, errorText });
+                  send(errorText ? { type: "tool-result", toolCallId: c.call_id, errorText } : { type: "tool-result", toolCallId: c.call_id, output: output as Json });
+                  parts.push(errorText ? { type: "tool", toolCallId: c.call_id, name: c.name, input: args as Record<string, Json>, state: "output-error", errorText } : { type: "tool", toolCallId: c.call_id, name: c.name, input: args as Record<string, Json>, state: "output-available", output: (output ?? null) as Json });
                   input.push({ type: "function_call", call_id: c.call_id, name: c.name, arguments: c.arguments || "{}" });
                   input.push({ type: "function_call_output", call_id: c.call_id, output: JSON.stringify(errorText ? { erro: errorText } : output ?? null) });
                 }

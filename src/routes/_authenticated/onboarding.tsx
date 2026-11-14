@@ -88,7 +88,7 @@ function Onboarding() {
         .from("profiles")
         .upsert({
           id,
-          email: auth.user!.email,
+          email: auth.user!.email ?? null,
           nome: nome.trim(),
           receita_mensal: receita ? Number(receita) : null,
           objetivos: objetivos.join(", ") || null,
