@@ -17,7 +17,11 @@ import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/_a
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedAppChatRouteImport } from './routes/_authenticated/_app/chat'
+import { Route as AuthenticatedAppDefinicoesRouteImport } from './routes/_authenticated/_app/definicoes'
 import { Route as AuthenticatedAppInicioRouteImport } from './routes/_authenticated/_app/inicio'
+import { Route as AuthenticatedAppMetasRouteImport } from './routes/_authenticated/_app/metas'
+import { Route as AuthenticatedAppPainelRouteImport } from './routes/_authenticated/_app/painel'
+import { Route as AuthenticatedAppPartilhasRouteImport } from './routes/_authenticated/_app/partilhas'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -57,11 +61,33 @@ const AuthenticatedAppChatRoute = AuthenticatedAppChatRouteImport.update({
   path: '/chat',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppDefinicoesRoute =
+  AuthenticatedAppDefinicoesRouteImport.update({
+    id: '/definicoes',
+    path: '/definicoes',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppInicioRoute = AuthenticatedAppInicioRouteImport.update({
   id: '/inicio',
   path: '/inicio',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppMetasRoute = AuthenticatedAppMetasRouteImport.update({
+  id: '/metas',
+  path: '/metas',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const AuthenticatedAppPainelRoute = AuthenticatedAppPainelRouteImport.update({
+  id: '/painel',
+  path: '/painel',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const AuthenticatedAppPartilhasRoute =
+  AuthenticatedAppPartilhasRouteImport.update({
+    id: '/partilhas',
+    path: '/partilhas',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -70,7 +96,11 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/api/chat': typeof ApiChatRoute
   '/chat': typeof AuthenticatedAppChatRoute
+  '/definicoes': typeof AuthenticatedAppDefinicoesRoute
   '/inicio': typeof AuthenticatedAppInicioRoute
+  '/metas': typeof AuthenticatedAppMetasRoute
+  '/painel': typeof AuthenticatedAppPainelRoute
+  '/partilhas': typeof AuthenticatedAppPartilhasRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -79,7 +109,11 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/api/chat': typeof ApiChatRoute
   '/chat': typeof AuthenticatedAppChatRoute
+  '/definicoes': typeof AuthenticatedAppDefinicoesRoute
   '/inicio': typeof AuthenticatedAppInicioRoute
+  '/metas': typeof AuthenticatedAppMetasRoute
+  '/painel': typeof AuthenticatedAppPainelRoute
+  '/partilhas': typeof AuthenticatedAppPartilhasRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -91,7 +125,11 @@ export interface FileRoutesById {
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/api/chat': typeof ApiChatRoute
   '/_authenticated/_app/chat': typeof AuthenticatedAppChatRoute
+  '/_authenticated/_app/definicoes': typeof AuthenticatedAppDefinicoesRoute
   '/_authenticated/_app/inicio': typeof AuthenticatedAppInicioRoute
+  '/_authenticated/_app/metas': typeof AuthenticatedAppMetasRoute
+  '/_authenticated/_app/painel': typeof AuthenticatedAppPainelRoute
+  '/_authenticated/_app/partilhas': typeof AuthenticatedAppPartilhasRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -102,7 +140,11 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/api/chat'
     | '/chat'
+    | '/definicoes'
     | '/inicio'
+    | '/metas'
+    | '/painel'
+    | '/partilhas'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,7 +153,11 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/api/chat'
     | '/chat'
+    | '/definicoes'
     | '/inicio'
+    | '/metas'
+    | '/painel'
+    | '/partilhas'
   id:
     | '__root__'
     | '/'
@@ -122,7 +168,11 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding'
     | '/api/chat'
     | '/_authenticated/_app/chat'
+    | '/_authenticated/_app/definicoes'
     | '/_authenticated/_app/inicio'
+    | '/_authenticated/_app/metas'
+    | '/_authenticated/_app/painel'
+    | '/_authenticated/_app/partilhas'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -191,6 +241,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppChatRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/_app/definicoes': {
+      id: '/_authenticated/_app/definicoes'
+      path: '/definicoes'
+      fullPath: '/definicoes'
+      preLoaderRoute: typeof AuthenticatedAppDefinicoesRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/_app/inicio': {
       id: '/_authenticated/_app/inicio'
       path: '/inicio'
@@ -198,17 +255,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppInicioRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/_app/metas': {
+      id: '/_authenticated/_app/metas'
+      path: '/metas'
+      fullPath: '/metas'
+      preLoaderRoute: typeof AuthenticatedAppMetasRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/_app/painel': {
+      id: '/_authenticated/_app/painel'
+      path: '/painel'
+      fullPath: '/painel'
+      preLoaderRoute: typeof AuthenticatedAppPainelRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/_app/partilhas': {
+      id: '/_authenticated/_app/partilhas'
+      path: '/partilhas'
+      fullPath: '/partilhas'
+      preLoaderRoute: typeof AuthenticatedAppPartilhasRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
   }
 }
 
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppChatRoute: typeof AuthenticatedAppChatRoute
+  AuthenticatedAppDefinicoesRoute: typeof AuthenticatedAppDefinicoesRoute
   AuthenticatedAppInicioRoute: typeof AuthenticatedAppInicioRoute
+  AuthenticatedAppMetasRoute: typeof AuthenticatedAppMetasRoute
+  AuthenticatedAppPainelRoute: typeof AuthenticatedAppPainelRoute
+  AuthenticatedAppPartilhasRoute: typeof AuthenticatedAppPartilhasRoute
 }
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppChatRoute: AuthenticatedAppChatRoute,
+  AuthenticatedAppDefinicoesRoute: AuthenticatedAppDefinicoesRoute,
   AuthenticatedAppInicioRoute: AuthenticatedAppInicioRoute,
+  AuthenticatedAppMetasRoute: AuthenticatedAppMetasRoute,
+  AuthenticatedAppPainelRoute: AuthenticatedAppPainelRoute,
+  AuthenticatedAppPartilhasRoute: AuthenticatedAppPartilhasRoute,
 }
 
 const AuthenticatedAppRouteWithChildren =
