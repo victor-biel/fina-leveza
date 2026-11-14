@@ -116,6 +116,7 @@ export const extractDocument = createServerFn({ method: "POST" })
 
 const ConfirmInput = z.object({
   id: z.string().uuid(),
+  messageId: z.string().uuid().optional(),
   valor: z.number().positive(),
   categoria: z.string().min(1).max(60),
   data: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
@@ -137,11 +138,22 @@ export const confirmDocument = createServerFn({ method: "POST" })
       .single();
     if (error) throw new Error("Não consegui registar a despesa.");
     await supabase.from("uploaded_documents").update({ estado: "confirmado", transaction_id: tx.id, valor_extraido: data.valor, categoria_sugerida: data.categoria }).eq("id", doc.id);
+    if (data.messageId) {
+      const { data: msg } = await supabase.from("chat_messages").select("parts").eq("id", data.messageId).maybeSingle();
+      if (msg) {
+        const updated = (msg.parts as unknown as ChatPart[]).map((p) =>
+          p.type === "document" && p.document.id === doc.id
+            ? { ...p, document: { ...p.document, estado: "confirmado" as const, transaction_id: tx.id, valor_extraido: data.valor, categoria_sugerida: data.categoria } }
+            : p,
+        );
+        await supabase.from("chat_messages").update({ parts: updated as unknown as Json }).eq("id", data.messageId);
+      }
+    }
     const valor = new Intl.NumberFormat("pt-PT", { style: "currency", currency: "EUR" }).format(data.valor);
     const parts: ChatPart[] = [
       {
         type: "text",
-        text: `Pronto! Registei **${data.descricao}** de **${valor}** em ${data.categoria} (${data.data}). Quer dividir esta conta com alguém? Diga, por exemplo, "divide pelo grupo Casa". [transacao_id: ${tx.id}]`,
+        text: `Pronto! Registei **${data.descricao}** de **${valor}** em ${data.categoria} (${data.data}). Quer dividir esta conta com alguém? Diga, por exemplo, "divide pelo grupo Casa".`,
       },
     ];
     const { data: row } = await supabase
