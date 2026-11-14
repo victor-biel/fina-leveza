@@ -87,7 +87,7 @@ export const Route = createFileRoute("/api/chat")({
             const parts: ChatPart[] = [];
             try {
               for (let round = 0; round < 6; round++) {
-                const s = await streamResponse({ model: "openai/gpt-6-astra", instructions, input, tools: agentTools, signal: request.signal } as Parameters<typeof streamResponse>[0], { signal: request.signal });
+                const s = await streamResponse({ model: "openai/gpt-6-astra", instructions, input, tools: agentTools }, { signal: request.signal });
                 let textBuf = "";
                 const calls: { call_id: string; name: string; arguments: string }[] = [];
                 for await (const ev of s) {
