@@ -16,6 +16,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/_app'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as AuthenticatedAppChatRouteImport } from './routes/_authenticated/_app/chat'
 import { Route as AuthenticatedAppInicioRouteImport } from './routes/_authenticated/_app/inicio'
 
 const IndexRoute = IndexRouteImport.update({
@@ -51,6 +52,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAppChatRoute = AuthenticatedAppChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
 const AuthenticatedAppInicioRoute = AuthenticatedAppInicioRouteImport.update({
   id: '/inicio',
   path: '/inicio',
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/api/chat': typeof ApiChatRoute
+  '/chat': typeof AuthenticatedAppChatRoute
   '/inicio': typeof AuthenticatedAppInicioRoute
 }
 export interface FileRoutesByTo {
@@ -71,6 +78,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/api/chat': typeof ApiChatRoute
+  '/chat': typeof AuthenticatedAppChatRoute
   '/inicio': typeof AuthenticatedAppInicioRoute
 }
 export interface FileRoutesById {
@@ -82,15 +90,28 @@ export interface FileRoutesById {
   '/_authenticated/_app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/api/chat': typeof ApiChatRoute
+  '/_authenticated/_app/chat': typeof AuthenticatedAppChatRoute
   '/_authenticated/_app/inicio': typeof AuthenticatedAppInicioRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/auth' | '/reset-password' | '/onboarding' | '/api/chat' | '/inicio'
+    | '/'
+    | '/auth'
+    | '/reset-password'
+    | '/onboarding'
+    | '/api/chat'
+    | '/chat'
+    | '/inicio'
   fileRoutesByTo: FileRoutesByTo
   to:
-    '/' | '/auth' | '/reset-password' | '/onboarding' | '/api/chat' | '/inicio'
+    | '/'
+    | '/auth'
+    | '/reset-password'
+    | '/onboarding'
+    | '/api/chat'
+    | '/chat'
+    | '/inicio'
   id:
     | '__root__'
     | '/'
@@ -100,6 +121,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_app'
     | '/_authenticated/onboarding'
     | '/api/chat'
+    | '/_authenticated/_app/chat'
     | '/_authenticated/_app/inicio'
   fileRoutesById: FileRoutesById
 }
@@ -162,6 +184,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/_app/chat': {
+      id: '/_authenticated/_app/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof AuthenticatedAppChatRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/_app/inicio': {
       id: '/_authenticated/_app/inicio'
       path: '/inicio'
@@ -173,10 +202,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAppRouteChildren {
+  AuthenticatedAppChatRoute: typeof AuthenticatedAppChatRoute
   AuthenticatedAppInicioRoute: typeof AuthenticatedAppInicioRoute
 }
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
+  AuthenticatedAppChatRoute: AuthenticatedAppChatRoute,
   AuthenticatedAppInicioRoute: AuthenticatedAppInicioRoute,
 }
 
