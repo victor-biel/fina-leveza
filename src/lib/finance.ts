@@ -180,3 +180,24 @@ export function pctChange(current: number, previous: number): number | null {
   if (previous <= 0) return null;
   return Math.round(((current - previous) / previous) * 100);
 }
+
+/** Reads an amount typed by a person ("12,50", "1 200", "12.5"). Returns NaN when it is not a number. */
+export function parseAmount(raw: string): number {
+  const s = raw.replace(/\s|€/g, "").replace(",", ".");
+  if (!/^\d+(\.\d{1,2})?$/.test(s)) return NaN;
+  return round2(Number(s));
+}
+
+export type GoalInput = { nome: string; valor_objetivo: number; prazo: string; valor_atual?: number };
+
+/** Every goal needs a name, a target above zero and a deadline that is not in the past. */
+export function validateGoal(g: GoalInput, today: string): string | null {
+  if (!g.nome.trim()) return "Dê um nome à meta.";
+  if (!(g.valor_objetivo > 0)) return "O valor da meta tem de ser maior que zero.";
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(g.prazo)) return "Escolha um prazo.";
+  if (g.prazo < today) return "O prazo não pode ser no passado.";
+  const atual = g.valor_atual ?? 0;
+  if (!(atual >= 0)) return "O valor já poupado não pode ser negativo.";
+  if (atual > g.valor_objetivo) return "O valor já poupado não pode ser maior que a meta.";
+  return null;
+}
