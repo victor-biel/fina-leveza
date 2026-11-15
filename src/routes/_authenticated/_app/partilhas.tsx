@@ -1,9 +1,15 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { settleWith } from "@/lib/mutations";
 import { Card, EmptyState, Money, PageHeader, Section } from "@/components/app/ui-bits";
 import { groupsQuery, profileQuery, splitsQuery, transactionsQuery } from "@/lib/queries";
-import { sharedBalances } from "@/lib/finance";
+import { formatMoney, sharedBalances } from "@/lib/finance";
 
 export const Route = createFileRoute("/_authenticated/_app/partilhas")({
   head: () => ({
@@ -28,6 +34,20 @@ function Partilhas() {
   const { data: groups } = useSuspenseQuery(groupsQuery);
   const moeda = profile?.moeda ?? "EUR";
   const b = sharedBalances(txs, splits);
+  const qc = useQueryClient();
+  const [settling, setSettling] = useState<{ nome: string; saldo: number } | null>(null);
+  async function confirmSettle() {
+    if (!settling) return;
+    try {
+      await settleWith(settling.nome);
+      toast.success(`Contas acertadas com ${settling.nome}.`);
+      await qc.invalidateQueries({ queryKey: splitsQuery.queryKey });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Não consegui acertar as contas.");
+    } finally {
+      setSettling(null);
+    }
+  }
   return (
     <div className="mx-auto max-w-3xl">
       <PageHeader title="Partilhas" subtitle="Contas divididas com outras pessoas" settings />
@@ -49,7 +69,7 @@ function Partilhas() {
                     <p className="font-semibold">{p.nome}</p>
                     <p className="text-xs text-muted-foreground">{p.saldo > 0 ? "deve-lhe" : "você deve"} <Money value={Math.abs(p.saldo)} moeda={moeda} /></p>
                   </div>
-                  <Button asChild size="sm" variant="secondary"><Link to="/chat" search={{ q: `Acertei as contas com ${p.nome}` }}>Acertar</Link></Button>
+                  <Button size="sm" variant="secondary" onClick={() => setSettling(p)}>Acertar</Button>
                 </li>
               ))}
             </ul>
@@ -73,7 +93,24 @@ function Partilhas() {
             ))}
           </div>
         )}
+        <Button asChild variant="outline" className="mt-4 w-full"><Link to="/chat" search={{ q: "Cria o grupo " }}>Criar grupo com a Fina</Link></Button>
       </Section>
+      <AlertDialog open={!!settling} onOpenChange={(o) => !o && setSettling(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Acertar contas com {settling?.nome}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {settling && settling.saldo > 0
+                ? `Confirme que ${settling.nome} já lhe pagou ${formatMoney(settling.saldo, moeda)}.`
+                : settling ? `Confirme que já pagou ${formatMoney(Math.abs(settling.saldo), moeda)} a ${settling.nome}.` : ""}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmSettle}>Sim, está pago</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
