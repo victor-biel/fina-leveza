@@ -52,9 +52,9 @@ function Definicoes() {
   async function save(e: React.FormEvent) {
     e.preventDefault();
     if (!profile) return;
-    if (!nome.trim()) return toast.error("Diga-me como gostaria de ser tratado.");
+    if (!nome.trim()) { toast.error("Diga-me como gostaria de ser tratado."); return; }
     const r = receita.trim() ? parseAmount(receita) : null;
-    if (r != null && Number.isNaN(r)) return toast.error("Escreva a receita só com números, por exemplo 1500.");
+    if (r != null && Number.isNaN(r)) { toast.error("Escreva a receita só com números, por exemplo 1500."); return; }
     setSaving(true);
     try {
       await updateProfile(profile.id, {
