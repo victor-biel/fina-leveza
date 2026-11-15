@@ -46,7 +46,7 @@ function NewGoalDialog({ open, onOpenChange, onDone }: { open: boolean; onOpenCh
     e.preventDefault();
     const valor_objetivo = parseAmount(valor);
     const valor_atual = atual.trim() ? parseAmount(atual) : 0;
-    if (Number.isNaN(valor_objetivo) || Number.isNaN(valor_atual)) return toast.error("Escreva os valores só com números, por exemplo 2000 ou 12,50.");
+    if (Number.isNaN(valor_objetivo) || Number.isNaN(valor_atual)) { toast.error("Escreva os valores só com números, por exemplo 2000 ou 12,50."); return; }
     setSaving(true);
     try {
       await createGoal({ nome, valor_objetivo, prazo, valor_atual });
@@ -88,7 +88,7 @@ function AddMoneyDialog({ goal, onClose, onDone }: { goal: Goal | null; onClose:
     e.preventDefault();
     if (!goal) return;
     const v = parseAmount(valor);
-    if (Number.isNaN(v) || v <= 0) return toast.error("Indique um valor maior que zero.");
+    if (Number.isNaN(v) || v <= 0) { toast.error("Indique um valor maior que zero."); return; }
     setSaving(true);
     try {
       await addToGoal(goal.id, Number(goal.valor_atual), v);
