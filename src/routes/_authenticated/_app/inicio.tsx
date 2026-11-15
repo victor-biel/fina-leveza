@@ -26,7 +26,7 @@ export const Route = createFileRoute("/_authenticated/_app/inicio")({
 
 function greeting() {
   const h = new Date().getHours();
-  return h < 12 ? "Bom dia" : h < 20 ? "Boa tarde" : "Boa noite";
+  return h < 6 ? "Boa noite" : h < 12 ? "Bom dia" : h < 20 ? "Boa tarde" : "Boa noite";
 }
 
 const quick = [

@@ -100,11 +100,15 @@ function Onboarding() {
       if (pessoas.length) {
         const { data: g, error: gErr } = await supabase.from("split_groups").insert({ user_id: id, nome: grupo.trim() || "Casa" }).select("id").single();
         if (gErr) throw gErr;
+        // Every row in a multi-row insert must have the same keys.
         const { error: mErr } = await supabase.from("group_members").insert([
           { user_id: id, group_id: g.id, nome: nome.trim(), is_self: true },
-          ...pessoas.map((p) => ({ user_id: id, group_id: g.id, nome: p })),
+          ...pessoas.map((p) => ({ user_id: id, group_id: g.id, nome: p, is_self: false })),
         ]);
-        if (mErr) throw mErr;
+        if (mErr) {
+          await supabase.from("split_groups").delete().eq("id", g.id);
+          throw mErr;
+        }
       }
       await qc.invalidateQueries();
       navigate({ to: "/inicio", replace: true });

@@ -51,3 +51,20 @@ describe("saldos partilhados", () => {
     expect(b.utilizadorDeve).toBe(30);
   });
 });
+
+import { parseAmount, validateGoal } from "./finance";
+
+describe("valores escritos pelo utilizador", () => {
+  it("aceita vírgula decimal: '12,50' é 12.5", () => expect(parseAmount("12,50")).toBe(12.5));
+  it("aceita '1 200 €' como 1200", () => expect(parseAmount("1 200 €")).toBe(1200));
+  it("recusa texto que não é valor", () => expect(parseAmount("doze")).toBeNaN());
+});
+
+describe("metas", () => {
+  const hoje = "2026-11-15";
+  it("aceita meta de 2000€ para férias até agosto", () =>
+    expect(validateGoal({ nome: "Férias", valor_objetivo: 2000, prazo: "2027-08-31" }, hoje)).toBeNull());
+  it("recusa meta sem prazo", () => expect(validateGoal({ nome: "Férias", valor_objetivo: 2000, prazo: "" }, hoje)).not.toBeNull());
+  it("recusa meta com valor zero", () => expect(validateGoal({ nome: "Férias", valor_objetivo: 0, prazo: "2027-08-31" }, hoje)).not.toBeNull());
+  it("recusa prazo no passado", () => expect(validateGoal({ nome: "Férias", valor_objetivo: 2000, prazo: "2026-01-01" }, hoje)).not.toBeNull());
+});

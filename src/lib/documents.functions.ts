@@ -110,7 +110,7 @@ export const extractDocument = createServerFn({ method: "POST" })
     const { data: rows, error: mErr } = await supabase
       .from("chat_messages")
       .insert([
-        { user_id: userId, role: "user", parts: userParts as unknown as Json },
+        { user_id: userId, role: "user", parts: userParts as unknown as Json, created_at: new Date().toISOString() },
         { user_id: userId, role: "assistant", parts: assistantParts as unknown as Json, created_at: new Date(Date.now() + 5).toISOString() },
       ])
       .select("id,role,parts,created_at");
